@@ -9,7 +9,6 @@ LINES = (
 
 nano "$HDENVS"
 
-# Loop through each line and append if not already present
 for LINE in "${LINES[@]}"; do
     if grep -Fxq "$LINE" "$HDENVS"; then
         echo "Already present: $LINE"
@@ -18,7 +17,6 @@ for LINE in "${LINES[@]}"; do
     fi
 done
 
-# Use 'source' only if the script is run in an interactive shell
 if [[ $- == *i* ]]; then
     source "$HDENVS"
     echo "Environment updated in current shell."

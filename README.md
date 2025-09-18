@@ -36,7 +36,7 @@ wsl --install
 
 ## Create `hadoop` User
 
-Open the Ubuntu terminal and create a user called `hadoop`. You will be prompted to provide a password. Ensure to save this password as it is going to be needed later.
+Open the Ubuntu terminal and create a user called `hadoop`. You will be prompted to provide a _password_. Ensure to save this password as it is going to be needed later.
 
 ```bash
 sudo adduser hadoop
@@ -54,14 +54,20 @@ Switch `hadoop`. Once you have successfully created the user, you need to switch
 su - hadoop
 ```
 
-## Clone Repo
+## Clone Repo ✨
 
-Clone this repository to ensure that you have the _shell scripts_ needed for the installation. Run the command below and it will automatically install git, configure your username and email and then clone this repository into your PC, in the `$HOME` directory.
+Clone this repository to ensure that you have the _shell scripts_ needed for the installation. Run the commands below. They will install git, configure your username and email and then clone this repository into your PC, in the `$HOME` directory.
 
-Replace **Username** and **Email** with your actual GitHub username and email(if any). This will require that you provide your password for the `hadoop` user.
+This will require that you provide your password for the `hadoop` user.
 
 ```bash
-sudo apt update && sudo apt install git -y && git config --global user.name "Username" && git config --global user.email "email@example.com"
+sudo apt update && sudo apt install dos2unix && sudo apt install git -y
+```
+
+Replace **Username** and **Email** with your actual GitHub username and email(if any).
+
+```bash
+git config --global user.name "Username" ; config --global user.email "email@example.com"
 ```
 
 Run this command to actually get the repository and store it in the `$HOME` directory.
@@ -79,7 +85,7 @@ export SCRIPTS_HOME="$HOME/PySpark-Practical/scripts"
 Once you have cloned to repository you need to ensure that the shell files are executable by running this command.
 
 ```bash
-chmod +x $SCRIPTS_HOME/ensure-executable.sh ; ./$SCRIPTS_HOME/ensure-executable.sh
+dos2unix $SCRIPTS_HOME/ensure-executable.sh && chmod +x $SCRIPTS_HOME/ensure-executable.sh && bash $SCRIPTS_HOME/ensure-executable.sh
 ```
 
 ## Install Java
@@ -87,7 +93,7 @@ chmod +x $SCRIPTS_HOME/ensure-executable.sh ; ./$SCRIPTS_HOME/ensure-executable.
 Most of the sotfware we're to use require Java to be installed in your system. So, for installing Java, the bash script `java-install.sh` has all the needed commands.
 
 ```bash
-./$SCRIPTS_HOME/java-install.sh
+bash $SCRIPTS_HOME/java-install.sh
 ```
 
 It should give you the version of Java as in the image below.
@@ -99,7 +105,7 @@ It should give you the version of Java as in the image below.
 Also, run the given script to install Apache Server.
 
 ```bash
-./$SCRIPTS_HOME/apache-install.sh
+bash $SCRIPTS_HOME/apache-install.sh
 ```
 
 To confirm, you need to go to `http://localhost` on your browser and confirm if the output page is as the image below, if yes, congrats you made it 😂!
@@ -111,7 +117,7 @@ To confirm, you need to go to `http://localhost` on your browser and confirm if 
 Hadoop requires passwordless SSH for communication between nodes, so configure that using the sript below.
 
 ```bash
-./$SCRIPTS_HOME/ssh-setup.sh
+bash $SCRIPTS_HOME/ssh-setup.sh
 ```
 
 If you have not configure the password, all you have to do is type `'yes'` and hit `Enter` key twice.
@@ -121,7 +127,7 @@ If you have not configure the password, all you have to do is type `'yes'` and h
 This script `hadoop-setup.sh` will download Hadoop into your system and perform necessary steps and then place it in the right location. Please do expect it to take time as Hadoop file is a huge one (depending on your Internet connection).
 
 ```bash
-./$SCRIPTS_HOME/hadoop-setup.sh
+bash $SCRIPTS_HOME/hadoop-setup.sh
 ```
 
 ## Configure Hadoop and Java Environment Variables
@@ -129,15 +135,21 @@ This script `hadoop-setup.sh` will download Hadoop into your system and perform 
 We need to configure some environment variables to ensure smooth operation of Java and Hadoop. To do that, we need open the `.bashrc` file and navigate to the last line and then export some environment variables and the command below will do just that.
 
 ```bash
-./$SCRIPTS_HOME/env-variables.sh
+bash $SCRIPTS_HOME/env-variables.sh
 ```
 
-## Edit Hadoop files
+## Hadoop Files
 
 Export `JAVA_HOME` in the `hadoop-env.sh` file. To do that, the command below runs a script that automatically implements this.
 
 ```bash
-./$SCRIPTS_HOME/edit-hadoop-env.sh 
+bash $SCRIPTS_HOME/edit-hadoop-env.sh 
+```
+
+Create the two mandatory data files for Hadoop information to be kept in. These files are critical for Hadoop Distributed File System (HDFS).
+
+```bash
+mkdir -p $HOME/hdfs/{namenode,datanode}
 ```
 
 Also, We need to edit a couple of Hadoop file to add **configurations**. For each of the file listed below, open the file and then navigate to a section where you have the configurations tags below
@@ -158,8 +170,9 @@ nano $HADOOP_HOME/etc/hadoop/core-site.xml
 ```xml
 <configuration>
   <property>
-    <name>fs.defaultFS</name>
+    <name>fs.default.name</name>
     <value>hdfs://localhost:9000</value>
+    <description>The default file system URI</description>
   </property>
 </configuration>
 ```
@@ -179,12 +192,12 @@ nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 
   <property>
     <name>dfs.name.dir</name>
-    <value>file:///usr/local/hadoop/hadoop_data/hdfs/namenode</value>
+    <value>file:///home/hadoop/hdfs/namenode</value>
   </property>
 
   <property>
     <name>dfs.data.dir</name>
-    <value>file:///usr/local/hadoop/hadoop_data/hdfs/datanode</value>
+    <value>file:///home/hadoop/hdfs/datanode</value>
   </property>
 </configuration>
 ```
@@ -197,10 +210,25 @@ nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
 
 ```xml
 <configuration>
-  <property>
+<property>
     <name>mapreduce.framework.name</name>
     <value>yarn</value>
-  </property>
+</property>
+
+<property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
+
+<property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
+
+<property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+</property>
 </configuration>
 ```
 
@@ -243,18 +271,24 @@ jps
 
 ![jps output](./images/jps-output.png)
 
+Also, you can access these two addresses `http://localhost:9870` and `http://localhost:9870` in your brower. The latter is for **YARN** while the first one is for **HDFS**.
+
+You should have an output similar to the one on the image below on one of the links.
+
+![Hadoop Cluster Details](./images/cluster-details.png)
+
 ## Installing Spark
 
 To install Spark, we need to download and move spark to the ideal directory which is `/usr/local/spark` and the shell script below does just that for you, so simply run it.
 
 ```bash
-./$SCRIPTS_HOME/spark-setup.sh
+bash $SCRIPTS_HOME/spark-setup.sh
 ```
 
 Thereafter we have to export the environment variable for spark in the `~/.bashrc` file.
 
 ```bash
-./$SCRIPTS_HOME/spark-env.sh
+bash $SCRIPTS_HOME/spark-env.sh
 ```
 
 To confirm if `Spark` has been successfully setup, run this command and it should give you an output which is more like the one in the image below.
@@ -270,7 +304,7 @@ spark-shell
 Since `Ubuntu 24.04` comes with `Python 3.12` pre-installed, we have to install `pip3` for managing packages. Also, we have to create a **virtual environments** and install the dependencies like `pyspark` and `jupyter notebook`. The shell script `python-setup.sh` automates the necessary steps.
 
 ```bash
-./$SCRIPTS_HOME/python-setup.sh
+bash $SCRIPTS_HOME/python-setup.sh
 ```
 
 After creating and activating the virtual environment, the scripts will open Juypter Notebook. What you have to do is open your broswer and paste this URL `http://localhost:8888/` in the address bar and then create a **New notebook file**

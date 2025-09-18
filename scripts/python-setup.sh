@@ -5,10 +5,10 @@ pip3 install --upgrade pip
 
 
 cd $HOME
-# creating the virtual environment in home directory
+# create virtual environment in home directory
 python3 -m venv pyspark-venv
 
-# activating the environment variable
+# activating the virtual environment
 source pyspark-venv/bin/activate
 
 # installing dependencies

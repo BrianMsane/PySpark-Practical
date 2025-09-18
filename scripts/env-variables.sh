@@ -2,7 +2,7 @@
 
 BASHRC="$HOME/.bashrc"
 
-EXPORT_LINE=(
+EXPORT_LINES=(
 'export HADOOP_HOME=/usr/local/hadoop'
 'export HADOOP_INSTALL=$HADOOP_HOME'
 'export HADOOP_MAPRED_HOME=$HADOOP_HOME'
@@ -29,9 +29,7 @@ for LINE in "${EXPORT_LINES[@]}"; do
     fi
 done
 
-# Source the updated .bashrc
-echo "Sourcing $BASHRC..."
-# Use 'source' only if the script is run in an interactive shell
+
 if [[ $- == *i* ]]; then
     source "$BASHRC"
 else
