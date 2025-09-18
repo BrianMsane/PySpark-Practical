@@ -1,24 +1,19 @@
 #!/bin/bash
 
-sudo apt update
 sudo apt install python3.12-venv pip3 -y
-
-# upgrade to latest version of pip
-pip3 install --upgrade pip (TODO: confirm this)
+pip3 install --upgrade pip
 
 
 cd $HOME
-# creating the virtual environment in home directory for ease of accessibility
+# creating the virtual environment in home directory
 python3 -m venv pyspark-venv
 
 # activating the environment variable
 source pyspark-venv/bin/activate
 
-# navigate to the requirements.txt file's directory
+# installing dependencies
 cd $REPO_SCRIPTS_HOME
 cd ..
-
-# installing dependecies
 pip3 install -r requirements.txt
 cd $HOME
 

@@ -11,6 +11,9 @@ files=(
   "ssh-setup.sh"
 )
 
+sudo chown hadoop:hadoop $SCRIPTS_HOME
+sudo chmod -R 755 $SCRIPTS_HOME
+
 for file in "${files[@]}"; do
   if [ -f "$file" ]; then
     chmod +x "$file"
