@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install python3.12-venv pip3 -y
+sudo apt install python3.12-venv pip3
 pip3 install --upgrade pip
 
 
@@ -12,7 +12,7 @@ python3 -m venv pyspark-venv
 source pyspark-venv/bin/activate
 
 # installing dependencies
-cd $REPO_SCRIPTS_HOME
+cd $SCRIPTS_HOME
 cd ..
 pip3 install -r requirements.txt
 cd $HOME

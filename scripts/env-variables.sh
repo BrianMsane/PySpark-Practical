@@ -2,7 +2,7 @@
 
 BASHRC="$HOME/.bashrc"
 
-EXPORT_LINE =(
+EXPORT_LINE=(
 'export HADOOP_HOME=/usr/local/hadoop'
 'export HADOOP_INSTALL=$HADOOP_HOME'
 'export HADOOP_MAPRED_HOME=$HADOOP_HOME'
