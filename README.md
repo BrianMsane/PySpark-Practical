@@ -114,7 +114,7 @@ Hadoop requires passwordless SSH for communication between nodes, so configure t
 ./$SCRIPTS_HOME/ssh-setup.sh
 ```
 
-If you have not configure the password, all you have to is type `'yes'` and hit `Enter` twice.
+If you have not configure the password, all you have to do is type `'yes'` and hit `Enter` key twice.
 
 ## Download & Install Hadoop
 
@@ -140,7 +140,7 @@ Export `JAVA_HOME` in the `hadoop-env.sh` file. To do that, the command below ru
 ./$SCRIPTS_HOME/edit-hadoop-env.sh 
 ```
 
-Also, We need to edit a couple of Hadoop file to add **configurations**. For each of the file listed below, open the file and then navigate to a section where you have
+Also, We need to edit a couple of Hadoop file to add **configurations**. For each of the file listed below, open the file and then navigate to a section where you have the configurations tags below
 
 ```xml
 <configurations>
@@ -235,7 +235,7 @@ Start the **Hadoop Cluster**.
 start-all.sh
 ```
 
-To verify whether the services are running as intented, use this command and the output you should get should be similar to the output shown in the image below.
+To verify whether the services are running as intended, use this command and the output you should get should be similar to the output shown in the image below.
 
 ```bash
 jps
@@ -257,7 +257,7 @@ Thereafter we have to export the environment variable for spark in the `~/.bashr
 ./$SCRIPTS_HOME/spark-env.sh
 ```
 
-To confirm if `Spark` has been successfully setup, run this command and it should give you and output which is more like the one in the image below.
+To confirm if `Spark` has been successfully setup, run this command and it should give you an output which is more like the one in the image below.
 
 ```bash
 spark-shell
@@ -273,7 +273,7 @@ Since `Ubuntu 24.04` comes with `Python 3.12` pre-installed, we have to install 
 ./$SCRIPTS_HOME/python-setup.sh
 ```
 
-After creating and activating the vritual environment, the scripts will open Juypter Notebook. What you have to do is open your broswer and paste this URL `http://localhost:8888/` in the address bar and then create a **New notebook file**
+After creating and activating the virtual environment, the scripts will open Juypter Notebook. What you have to do is open your broswer and paste this URL `http://localhost:8888/` in the address bar and then create a **New notebook file**
 
 ## Sample Code 🧑‍💻
 
