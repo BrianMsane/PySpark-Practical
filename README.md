@@ -67,7 +67,7 @@ sudo apt update && sudo apt install dos2unix && sudo apt install git -y
 Replace **Username** and **Email** with your actual GitHub username and email(if any).
 
 ```bash
-git config --global user.name "Username" ; config --global user.email "email@example.com"
+git config --global user.name "Username" ; git config --global user.email "email@example.com"
 ```
 
 Run this command to actually get the repository and store it in the `$HOME` directory.
