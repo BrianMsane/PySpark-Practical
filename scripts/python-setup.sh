@@ -1,8 +1,10 @@
 #!/bin/bash
 
-sudo apt install python3.12-venv pip3
+sudo apt update
+sudo apt upgrade -y
+sudo apt install python3.12-venv -y
+sudo apt install -y python3-pip
 pip3 install --upgrade pip
-
 
 cd $HOME
 # create virtual environment in home directory

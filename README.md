@@ -271,7 +271,7 @@ jps
 
 ![jps output](./images/jps-output.png)
 
-Also, you can access these two addresses `http://localhost:9870` and `http://localhost:9870` in your brower. The latter is for **YARN** while the first one is for **HDFS**.
+Also, you can access these two addresses `http://localhost:9870` and `http://localhost:8088` in your brower. The latter is for **YARN** while the first one is for **HDFS**.
 
 You should have an output similar to the one on the image below on one of the links.
 
