@@ -16,8 +16,6 @@ EXPORT_LINES=(
 'export PATH=$PATH:$JAVA_HOME/bin'
 )
 
-echo "Updating $BASHRC with Hadoop, Java, Yarn environment variables..."
-
 nano "$BASHRC"
 
 # Loop through each line and append if not already present

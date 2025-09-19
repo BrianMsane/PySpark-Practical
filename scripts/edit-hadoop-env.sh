@@ -2,7 +2,7 @@
 
 HDENVS="$HADOOP_HOME/etc/hadoop/hadoop-env.sh"
 
-LINES = (
+LINES=(
 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
 'export HADOOP_CLASSPATH+=" $HADOOP_HOME/lib/*.jar"'
 )
