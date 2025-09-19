@@ -15,7 +15,7 @@ sudo chown hadoop:hadoop $SCRIPTS_HOME
 sudo chmod -R 755 $SCRIPTS_HOME
 
 for FILE in "${FILES[@]}"; do
-  if [ -f "$FILE" ]; then
+  if [ -f "$SCRIPTS_HOME/$FILE" ]; then
     chmod +x "$SCRIPTS_HOME/$FILE"
     dos2unix "$SCRIPTS_HOME/$FILE"
     echo "$FILE is now executable"
