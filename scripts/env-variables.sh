@@ -16,9 +16,6 @@ EXPORT_LINES=(
 'export PATH=$PATH:$JAVA_HOME/bin'
 )
 
-nano "$BASHRC"
-
-# Loop through each line and append if not already present
 for LINE in "${EXPORT_LINES[@]}"; do
     if grep -Fxq "$LINE" "$BASHRC"; then
         echo "Already present: $LINE"

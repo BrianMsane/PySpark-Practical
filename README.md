@@ -135,15 +135,15 @@ bash $SCRIPTS_HOME/hadoop-setup.sh
 We need to configure some environment variables to ensure smooth operation of Java and Hadoop. To do that, we need open the `.bashrc` file and navigate to the last line and then export some environment variables and the command below will do just that.
 
 ```bash
-bash $SCRIPTS_HOME/env-variables.sh
+bash $SCRIPTS_HOME/env-variables.sh && source "$HOME/.bashrc"
 ```
 
 ## Hadoop Files
 
-Export `JAVA_HOME` in the `hadoop-env.sh` file. To do that, the command below runs a script that automatically implements this.
+Export `JAVA_HOME` in the `hadoop-env.sh` file. To do that, the command below opens the file.
 
 ```bash
-bash $SCRIPTS_HOME/edit-hadoop-env.sh 
+bash $SCRIPTS_HOME/edit-hadoop-env.sh && source $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 ```
 
 Create the two mandatory data files for Hadoop information to be kept in. These files are critical for Hadoop Distributed File System (HDFS).
@@ -244,7 +244,7 @@ nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
     <name>yarn.nodemanager.aux-services</name>
     <value>mapreduce_shuffle</value>
   </property>
-</configuration>c
+</configuration>
 ```
 
 Now the files are in order 🥂!
@@ -288,7 +288,7 @@ bash $SCRIPTS_HOME/spark-setup.sh
 Thereafter we have to export the environment variable for spark in the `~/.bashrc` file.
 
 ```bash
-bash $SCRIPTS_HOME/spark-env.sh
+bash $SCRIPTS_HOME/spark-env.sh && source "$HOME/.bashrc"
 ```
 
 To confirm if `Spark` has been successfully setup, run this command and it should give you an output which is more like the one in the image below.

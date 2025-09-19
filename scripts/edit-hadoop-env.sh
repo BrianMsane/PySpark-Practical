@@ -3,11 +3,9 @@
 HDENVS="$HADOOP_HOME/etc/hadoop/hadoop-env.sh"
 
 LINES=(
-'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
-'export HADOOP_CLASSPATH+=" $HADOOP_HOME/lib/*.jar"'
+'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64'
+'export HADOOP_CLASSPATH+="$HADOOP_HOME/lib/*.jar"'
 )
-
-nano "$HDENVS"
 
 for LINE in "${LINES[@]}"; do
     if grep -Fxq "$LINE" "$HDENVS"; then
