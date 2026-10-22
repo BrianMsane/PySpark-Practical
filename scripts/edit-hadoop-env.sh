@@ -1,10 +1,9 @@
 #!/bin/bash
 
-HDENVS="$HADOOP_HOME/etc/hadoop/hadoop-env.sh"
+HDENVS="$HADOOP_CONF_DIR/hadoop-env.sh"
 
 LINES=(
-'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64'
-'export HADOOP_CLASSPATH+="$HADOOP_HOME/lib/*.jar"'
+'export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64'
 )
 
 for LINE in "${LINES[@]}"; do
@@ -14,11 +13,3 @@ for LINE in "${LINES[@]}"; do
         echo "$LINE" >> "$HDENVS"
     fi
 done
-
-if [[ $- == *i* ]]; then
-    source "$HDENVS"
-    echo "Environment updated in current shell."
-else
-    echo "Note: Run 'source $HADOOP_HOME/etc/hadoop/hadoop-env.sh' manually to apply changes in your current session."
-fi
-

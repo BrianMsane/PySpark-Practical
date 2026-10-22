@@ -1,88 +1,88 @@
-# PySpark Practical
+# Data Warehouse Implementation
 
-This practical is intended for IndabaX Eswatini 2️⃣0️⃣2️⃣5️⃣. It covers how to setup and run **Apache Server**, **Hadoop**, and **Spark** through the **PySpark API** for _Big Data Analytics and Processing_.
+In this practical we setup a data warehouse using Apache Hive, Apache Hadoop, Apache Spark. Notably, we replace the Mapreduce component of Apache Hadoop with Spark because Spark is designed for in-memory processing, making it faster than Mapreduce. Additionally, we use Python for interacting with Spark (through PySpark) and that is an added advantage of Spark since Mapreduce requires Java code for each task.
 
-_**Authors: Prof. Stephen Fashoto, Brian Msane, and Bandile Malaza**_\
+We leverage the Medallion architecture for building data pipelines which extracts data from various source systems, transforms the data, and loads it into the warehouse. That is, an ETL pipeline is used instead of an ELT pipelines (i.e., in the warehouse we only load clean, aggregated business data to support decision making).
+
+_**Authors: Brian Msane and Bandile Malaza**_\
 _**Reviewer: Prof. Stephen Fashoto**_
 
 ## Getting Started 💻
 
 For getting started with this practical we need a few things which include:
 
-- WSL (Windows Subsystem for Linux)
-- Java 17
-- Apache Server
-- Spark
-- Hadoop
-- PySpark
-- Jupyter Notebook
+| Component        | Version      |
+|------------------|--------------|
+| OS               | Ubuntu 26.04 |
+| Java             | 21           |
+| Hadoop           | 3.5.0        |
+| Spark            | 4.2.0        |
+| Hive             | 4.2.1        |
+| Python           | 3.14         |
+| PySpark          | Latest       |
+| Jupyter Notebook | Latest       |
 
-Optional
+If you're on Windows, make sure you enable `WSL` and you can install Ubuntu as follows.
 
-- [Virtualbox](https://dev.to/florianfelsing/how-to-run-an-ubuntu-vm-on-windows-11-4oef)
-- [Ubuntu 24.04 LTS image](https://www.virtualbox.org/wiki/Downloads)
-
-  If you are going to be using a virtual machine (VM), powered by Ubuntu operating system, you need to follow the [VM guide](./virtual-machines.md). Once the VM is up an running we can then proceed with the steps below.
-
-## Install WSL and Ubuntu
-
-- On Windows, open `PowerShell` as an **Administrator** and run this command.
+- Open `PowerShell` as an **Administrator** and run this command.
 
 ```powershell
 wsl --install
 ```
 
-- _Restart your PC if prompted_  and ensure **virtualization** is enabled in **BIOS**. _(Seek help here!)_
+If the distribution is not installed by default, run this command to install it. This installs a specific distribution but you can change the version to another one.
 
-## Create `hadoop` User
-
-Open the Ubuntu terminal and create a user called `hadoop`. You will be prompted to provide a _password_. Ensure to save this password as it is going to be needed later.
-
-```bash
-sudo adduser hadoop
+```powershell
+wsl.exe --install Ubuntu-26.04
 ```
 
-Give privileges to the user.
+_Restart your PC, if prompted,_  and ensure **virtualization** is enabled in **BIOS**. _([Refer to this guide](https://support.microsoft.com/en-us/windows/experience/enable-virtualization-on-windows))_
+
+_Alternatively;_ If you are going to be using a virtual machine (VM), powered by Ubuntu operating system,[Ubuntu 26.04 LTS image](https://www.virtualbox.org/wiki/Downloads), you need to follow the [VM guide](./virtual-machines.md). Once the VM is up an running we can then proceed with the steps below. To install Virtualbox and install Ubuntu in your Windows machine, follow this [guide](https://dev.to/florianfelsing/how-to-run-an-ubuntu-vm-on-windows-11-4oef).
+
+## Create `data` User
+
+Setup the default Unix user credentials; username and password. Open the Ubuntu terminal and create a user called `data`. You will be prompted to provide and confirm a _password_. Note: save this password as it is going to be needed multiple times later on.
 
 ```bash
-sudo usermod -aG sudo hadoop
+sudo adduser data
 ```
 
-Switch `hadoop`. Once you have successfully created the user, you need to switch to that user using the command below. It will prompt you to provide the password you created above.
+Elevate user privileges and add `data` to the `sudo` group.
 
 ```bash
-su - hadoop
+sudo usermod -aG sudo data
+```
+
+Switch to the `data` user. Once you have successfully created the user, you need to switch to that user using the command below. It will prompt you to provide the password you created above.
+
+```bash
+su - data
 ```
 
 ## Clone Repo ✨
 
-Clone this repository to ensure that you have the _shell scripts_ needed for the installation. Run the commands below. They will install git, configure your username and email and then clone this repository into your PC, in the `$HOME` directory.
-
-This will require that you provide your password for the `hadoop` user.
+Clone this repository to ensure that you have the _shell scripts_ needed for the installation process. Run the commands below; they will install `git`, configure your `git` global username and email and then clone this repository into your PC, in the `$HOME` directory. You will be required to provide your password for the `data` user. _Note: many distributions already come with `git` pre-installed but the command is meant to be safe and install it in case it is not already installed_. Replace **Username** and **Email** with your actual GitHub username and email in the second command.
 
 ```bash
 sudo apt update && sudo apt install dos2unix && sudo apt install git -y
 ```
 
-Replace **Username** and **Email** with your actual GitHub username and email(if any).
-
 ```bash
 git config --global user.name "Username" ; git config --global user.email "email@example.com"
 ```
-
-Run this command to actually get the repository and store it in the `$HOME` directory.
 
 ```bash
 cd $HOME && git clone https://github.com/BrianMsane/PySpark-Practical.git
 ```
 
-For ease of use, you should export the path to the shell scripts to be executed. This makes the environment variable only available in the current terminal session so to access it, ensure that you keep this terminal session.
+For ease of the installion process, you should export the path to the shell scripts to be executed. _This makes the environment variable only available in the current terminal session so ensure that you keep this terminal session active and run subsequent commands here_. NoteL you might required to run this multiple times.
 
 ```bash
 export SCRIPTS_HOME="$HOME/PySpark-Practical/scripts"
 ```
 
-Once you have cloned to repository you need to ensure that the shell files are executable by running this command.
+Once you have cloned to repository you need to ensure that the shell files are Unix-executable by running this command.
 
 ```bash
 dos2unix $SCRIPTS_HOME/ensure-executable.sh && chmod +x $SCRIPTS_HOME/ensure-executable.sh && bash $SCRIPTS_HOME/ensure-executable.sh
@@ -90,27 +90,11 @@ dos2unix $SCRIPTS_HOME/ensure-executable.sh && chmod +x $SCRIPTS_HOME/ensure-exe
 
 ## Install Java
 
-Most of the sotfware we're to use require Java to be installed in your system. So, for installing Java, the bash script `java-install.sh` has all the needed commands.
+Most of the sotfware we're using require `Java` to be installed in your system. So, for installing Java, the bash script `java-install.sh` has all the needed commands.
 
 ```bash
 bash $SCRIPTS_HOME/java-install.sh
 ```
-
-It should give you the version of Java as in the image below.
-
-![java version](./images/java-version.png)
-
-## Install Apache Server
-
-Also, run the given script to install Apache Server.
-
-```bash
-bash $SCRIPTS_HOME/apache-install.sh
-```
-
-To confirm, you need to go to `http://localhost` on your browser and confirm if the output page is as the image below, if yes, congrats you made it 😂!
-
-![Expected output](./images/default-apache-server-page.png)
 
 ## Setup SSH
 
@@ -120,19 +104,25 @@ Hadoop requires passwordless SSH for communication between nodes, so configure t
 bash $SCRIPTS_HOME/ssh-setup.sh
 ```
 
-If you have not configure the password, all you have to do is type `'yes'` and hit `Enter` key twice.
+If you have not configured the password, all you have to do is type `'yes'` and hit `Enter` key twice.
 
-## Download & Install Hadoop
+## Download Hadoop
 
-This script `hadoop-setup.sh` will download Hadoop into your system and perform necessary steps and then place it in the right location. Please do expect it to take time as Hadoop file is a huge one (depending on your Internet connection).
+We are going to use the `/opt` folder for storing the required modules and frameworks.
+
+```bash
+sudo mkdir -p /opt && sudo chown $USER /opt && cd /opt
+```
+
+The script `hadoop-setup.sh` will download Hadoop into your system and perform necessary steps and then place it in the right location. Please do expect it to take time (depending on your Internet connection) as Hadoop files can be massive.
 
 ```bash
 bash $SCRIPTS_HOME/hadoop-setup.sh
 ```
 
-## Configure Hadoop and Java Environment Variables
+## Configure Environment Variables
 
-We need to configure some environment variables to ensure smooth operation of Java and Hadoop. To do that, we need open the `.bashrc` file and navigate to the last line and then export some environment variables and the command below will do just that.
+We need to configure some environment variables to ensure smooth operation of `Java`, `Spark`, `Hive`, and `Hadoop`. To do that, we need open the `.bashrc` file and navigate to the last line and then export some environment variables and the command below will do just that.
 
 ```bash
 bash $SCRIPTS_HOME/env-variables.sh && source "$HOME/.bashrc"
@@ -140,168 +130,63 @@ bash $SCRIPTS_HOME/env-variables.sh && source "$HOME/.bashrc"
 
 ## Hadoop Files
 
-Export `JAVA_HOME` in the `hadoop-env.sh` file. To do that, the command below opens the file.
+Export `JAVA_HOME` in the `hadoop-env.sh` file.
 
 ```bash
-bash $SCRIPTS_HOME/edit-hadoop-env.sh && source $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+bash $SCRIPTS_HOME/edit-hadoop-env.sh
 ```
 
-Create the two mandatory data files for Hadoop information to be kept in. These files are critical for Hadoop Distributed File System (HDFS).
+Create the two mandatory data files for Hadoop information to be kept in. These files are critical for Hadoop Distributed File System (HDFS). We put them in the `/data` folder in `$HADOOP_HOME`.
 
 ```bash
-mkdir -p $HOME/hdfs/{namenode,datanode}
+mkdir -p $HADOOP_HOME/data/namenode $HADOOP_HOME/data/datanode
 ```
 
-Also, We need to edit a couple of Hadoop file to add **configurations**. For each of the file listed below, open the file and then navigate to a section where you have the configurations tags below
+## Hadoop Configurations
 
-```xml
-<configurations>
-</configurations>
-```
+Also, We need to edit a couple of Hadoop file to add **configurations**. For each of the file listed below, we delete the current file and copy the one in the /conf directory in this repository. The latter contains the configurations while the former is just a template you configure on top of. This approach eliminates manual work.
 
-and replace these tags with the following `xml` codes corresponding to it.
-
-- Edit core-site.xml
+- core-site.xml
+- hdfs-site.xml
+- mapred-site.xml
+- yarn-site.xml
 
 ```bash
-nano $HADOOP_HOME/etc/hadoop/core-site.xml
+bash $SCRIPTS_HOME/hadoop-conf.sh
 ```
 
-```xml
-<configuration>
-  <property>
-    <name>fs.default.name</name>
-    <value>hdfs://localhost:9000</value>
-    <description>The default file system URI</description>
-  </property>
-</configuration>
-```
-
-- Edit hdfs-site.xml
-
-```bash
-nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-```
-
-```xml
-<configuration>
-  <property>
-    <name>dfs.replication</name>
-    <value>1</value>
-  </property>
-
-  <property>
-    <name>dfs.name.dir</name>
-    <value>file:///home/hadoop/hdfs/namenode</value>
-  </property>
-
-  <property>
-    <name>dfs.data.dir</name>
-    <value>file:///home/hadoop/hdfs/datanode</value>
-  </property>
-</configuration>
-```
-
-- Edit mapred-site.xml
-
-```bash
-nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
-```
-
-```xml
-<configuration>
-<property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn</value>
-</property>
-
-<property>
-    <name>yarn.app.mapreduce.am.env</name>
-    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
-</property>
-
-<property>
-    <name>mapreduce.map.env</name>
-    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
-</property>
-
-<property>
-    <name>mapreduce.reduce.env</name>
-    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
-</property>
-</configuration>
-```
-
-- Edit yarn-site.xml
-
-```bash
-nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
-```
-
-```xml
-<configuration>
-  <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-  </property>
-</configuration>
-```
-
-Now the files are in order 🥂!
-
-## Validate configurations
-
-Finally, validate the Hadoop configuration and format the ``HDFS NameNode``.
+Now the files are in order 🥂! Now we initialize metadata storage.
 
 ```bash
 hdfs namenode -format
 ```
 
-Start the **Hadoop Cluster**.
+Initialize all Hadoop daemons.
 
 ```bash
 start-all.sh
 ```
 
-To verify whether the services are running as intended, use this command and the output you should get should be similar to the output shown in the image below.
+To verify whether the Java processes are running, run `jps`. The processes `NameNode`, `NodeManager`, `DataNode`, `SecondaryNameNode`, and `ResourceManager` should be running.
 
-```bash
-jps
-```
+Also, you can access these two addresses `http://localhost:9870` and `http://localhost:8088` in your brower. The latter is for **YARN** while the former one is for **HDFS**. You should have an output similar to the one on the image below on one of the links.
 
-![jps output](./images/jps-output.png)
-
-Also, you can access these two addresses `http://localhost:9870` and `http://localhost:8088` in your brower. The latter is for **YARN** while the first one is for **HDFS**.
-
-You should have an output similar to the one on the image below on one of the links.
-
-![Hadoop Cluster Details](./images/cluster-details.png)
+![YARN interface at localhost:8088](./images/yarn-ui.png)
+![HDFS interface at localhost9870](./images/hdfs-ui.png)
 
 ## Installing Spark
 
-To install Spark, we need to download and move spark to the ideal directory which is `/usr/local/spark` and the shell script below does just that for you, so simply run it.
+To install Spark, we need to download and move Spark to the ideal directory which is `/opt/spark` and the shell script below does just that for you, so simply run it. Note: we have already exported the `$SPARK_HOME` environment variable in the `bashrc` file. To confirm if `Spark` has been successfully setup, run this `spark --version`
 
 ```bash
 bash $SCRIPTS_HOME/spark-setup.sh
 ```
 
-Thereafter we have to export the environment variable for spark in the `~/.bashrc` file.
-
-```bash
-bash $SCRIPTS_HOME/spark-env.sh && source "$HOME/.bashrc"
-```
-
-To confirm if `Spark` has been successfully setup, run this command and it should give you an output which is more like the one in the image below.
-
-```bash
-spark-shell
-```
-
-![Spark shell](./images/spark-shell.png)
+To confirm if `Spark` has been successfully setup, run this `spark --version`
 
 ## Setting up Pip and Virtual Environment
 
-Since `Ubuntu 24.04` comes with `Python 3.12` pre-installed, we have to install `pip3` for managing packages. Also, we have to create a **virtual environments** and install the dependencies like `pyspark` and `jupyter notebook`. The shell script `python-setup.sh` automates the necessary steps.
+Since `Ubuntu 26.04` comes with `Python 3.14` pre-installed, we have to install `pip3` for managing packages. Also, we have to create a **virtual environment** and install the dependencies like `pyspark` and `jupyter notebook`.
 
 ```bash
 bash $SCRIPTS_HOME/python-setup.sh
@@ -311,28 +196,23 @@ After creating and activating the virtual environment, the scripts will open Juy
 
 ## Sample Code 🧑‍💻
 
-Insert a cell, insert, and run the code below:
+Insert a cell, paste, and run the code below:
 
 ```python
 from pyspark.sql import SparkSession
 
-# Create Spark session
+
 spark = SparkSession.builder \
     .appName("simpleapp") \
     .master("local[*]") \
     .getOrCreate()
 
-# Sample data
 data = [
   ("Metfula", 25, "Eswatini"),
   ("Elliot", 28, "Zimbabwe"),
   ("Aina", 30, "Namibia")
 ]
-
-# Create DataFrame
 df = spark.createDataFrame(data, ["Name", "Age", "Country"])
-
-# Show data
 df.show()
 ```
 
@@ -344,7 +224,7 @@ The expected output is
 +-------+---+---------+
 |Metfula| 25| Eswatini|
 | Elliot| 28| Zimbabwe|
-|   Aina| 30|  Namibia|
+|Fashoto| 30|  Nigeria|
 +-------+---+---------+
 ```
 

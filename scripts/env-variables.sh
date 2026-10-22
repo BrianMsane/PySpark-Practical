@@ -3,17 +3,13 @@
 BASHRC="$HOME/.bashrc"
 
 EXPORT_LINES=(
-'export HADOOP_HOME=/usr/local/hadoop'
-'export HADOOP_INSTALL=$HADOOP_HOME'
-'export HADOOP_MAPRED_HOME=$HADOOP_HOME'
-'export HADOOP_COMMON_HOME=$HADOOP_HOME'
-'export HADOOP_HDFS_HOME=$HADOOP_HOME'
-'export YARN_HOME=$HADOOP_HOME'
-'export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native'
-'export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin'
-'export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"'
-'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64'
-'export PATH=$PATH:$JAVA_HOME/bin'
+'export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64'
+'export HADOOP_HOME=/opt/hadoop'
+'export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop'
+'export YARN_CONF_DIR=$HADOOP_CONF_DIR'
+'export HIVE_HOME=/opt/hive'
+'export SPARK_HOME=/opt/spark'
+'export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin'
 )
 
 for LINE in "${EXPORT_LINES[@]}"; do
@@ -23,10 +19,3 @@ for LINE in "${EXPORT_LINES[@]}"; do
         echo "$LINE" >> "$BASHRC"
     fi
 done
-
-
-if [[ $- == *i* ]]; then
-    source "$BASHRC"
-else
-    echo "Note: Run 'source ~/.bashrc' manually to apply changes in your current session."
-fi

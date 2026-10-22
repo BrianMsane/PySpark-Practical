@@ -1,17 +1,22 @@
 #!/bin/bash
 
 FILES=(
-  "apache-install.sh"
   "edit-hadoop-env.sh"
   "env-variables.sh"
+  "hadoop-conf.sh"
   "hadoop-setup.sh"
+  "hive-setup.sh"
   "java-install.sh"
+  "metastore.sh"
   "python-setup.sh"
-  "spark-env.sh"
+  "spark-setup.sh"
   "ssh-setup.sh"
+  "start.sh"
+  "stop.sh"
+  "warehouse-setup.sh"
 )
 
-sudo chown hadoop:hadoop $SCRIPTS_HOME
+sudo chown data:data $SCRIPTS_HOME
 sudo chmod -R 755 $SCRIPTS_HOME
 
 for FILE in "${FILES[@]}"; do
